@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
+import emailjs from '@emailjs/browser';
 import {
   Send,
   Mail,
@@ -10,7 +11,8 @@ import {
   Twitter,
   Dribbble,
   Check,
-  Loader2
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 
 const socialLinks = [
@@ -33,6 +35,7 @@ interface Particle {
 function ParticleBurst({ trigger }: { trigger: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
+  const requestRef = useRef<number | null>(null);
 
   const createBurst = () => {
     const canvas = canvasRef.current;
@@ -80,13 +83,18 @@ function ParticleBurst({ trigger }: { trigger: boolean }) {
     });
 
     if (particlesRef.current.length > 0) {
-      requestAnimationFrame(animate);
+      requestRef.current = requestAnimationFrame(animate);
     }
   };
 
-  if (trigger) {
-    setTimeout(createBurst, 100);
-  }
+  useEffect(() => {
+    if (trigger) {
+      setTimeout(createBurst, 100);
+    }
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [trigger]);
 
   return (
     <canvas
@@ -103,36 +111,49 @@ export function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setIsError(false);
 
-    // Construct mailto link
-    const subject = `Portfolio Contact from ${formData.name}`;
-    const body = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`;
-    const mailtoLink = `mailto:ahir385350@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // ---------------------------------------------------------
+    // REPLACE THESE WITH YOUR ACTUAL EMAILJS KEYS
+    // ---------------------------------------------------------
+    const SERVICE_ID = 'service_ezc46d7';
+    const TEMPLATE_ID = 'template_p6lj0o9';
+    const PUBLIC_KEY = 'FoDsNkfdss88zw0me';
 
-    // Open email client
-    window.location.href = mailtoLink;
+    try {
+      await emailjs.sendForm(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        formRef.current!,
+        PUBLIC_KEY
+      );
 
-    // Simulate API call for UI feedback
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Success
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setShowBurst(true);
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setShowBurst(true);
+      setTimeout(() => setShowBurst(false), 100);
+      setTimeout(() => {
+        setFormData({ name: '', email: '', message: '' });
+        setIsSubmitted(false);
+      }, 3000);
 
-    // Reset burst trigger
-    setTimeout(() => setShowBurst(false), 100);
-
-    // Reset form after delay
-    setTimeout(() => {
-      setFormData({ name: '', email: '', message: '' });
-      setIsSubmitted(false);
-    }, 3000);
+    } catch (error) {
+      console.error('Email Error:', error);
+      setIsSubmitting(false);
+      setIsError(true);
+      setTimeout(() => setIsError(false), 3000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -199,7 +220,7 @@ export function Contact() {
             <div className="relative glass-strong rounded-2xl p-8">
               <ParticleBurst trigger={showBurst} />
 
-              <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 relative z-10">
                 {/* Name Field */}
                 <div className="relative">
                   <label className="block text-sm text-white/60 mb-2">Name</label>
@@ -251,11 +272,13 @@ export function Contact() {
                   onMouseLeave={handleMouseLeave}
                   className={`w-full relative py-4 rounded-xl font-medium text-white overflow-hidden transition-all duration-300 ${isSubmitted
                     ? 'bg-green-500'
-                    : 'bg-gradient-to-r from-[#7e6ee3] to-[#5b6ee3] hover:shadow-lg hover:shadow-[#7e6ee3]/40'
+                    : isError
+                      ? 'bg-red-500'
+                      : 'bg-gradient-to-r from-[#7e6ee3] to-[#5b6ee3] hover:shadow-lg hover:shadow-[#7e6ee3]/40'
                     }`}
                   data-cursor-hover
                 >
-                  <span className={`flex items-center justify-center gap-2 transition-all duration-300 ${isSubmitting || isSubmitted ? 'opacity-0' : 'opacity-100'
+                  <span className={`flex items-center justify-center gap-2 transition-all duration-300 ${isSubmitting || isSubmitted || isError ? 'opacity-0' : 'opacity-100'
                     }`}>
                     <Send size={18} />
                     Send Message
@@ -271,6 +294,13 @@ export function Contact() {
                     <span className="absolute inset-0 flex items-center justify-center gap-2">
                       <Check size={24} />
                       Message Sent!
+                    </span>
+                  )}
+
+                  {isError && (
+                    <span className="absolute inset-0 flex items-center justify-center gap-2">
+                      <AlertCircle size={24} />
+                      Failed to Send
                     </span>
                   )}
                 </button>

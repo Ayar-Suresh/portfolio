@@ -313,14 +313,7 @@ export function ProjectShowcase() {
 
 
 
-  const scrollModal = (direction: 'left' | 'right') => {
-    if (!modalScrollContainerRef.current) return;
-    const scrollAmount = modalScrollContainerRef.current.clientWidth;
-    modalScrollContainerRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    });
-  };
+
 
   const handleFullScreenNav = (direction: 'left' | 'right') => {
     if (!selectedProject || fullScreenImageIndex === null) return;

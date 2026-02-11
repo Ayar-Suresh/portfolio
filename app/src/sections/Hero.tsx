@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
-import { ArrowDown, Sparkles, Terminal, Command, GitBranch, Cpu } from 'lucide-react';
+import { ArrowDown, Terminal, Command, GitBranch, Cpu } from 'lucide-react';
 
 const roles = ['Full Stack Developer', 'Creative Technologist', 'Problem Solver', 'UI/UX Enthusiast'];
 

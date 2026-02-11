@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Sparkles, Terminal, Zap, Fingerprint, Brain, Activity, Waves } from 'lucide-react';
+import { Send, Sparkles, Terminal, Fingerprint, Brain, Activity, Waves } from 'lucide-react';
 import { CharacterStage } from '../components/CharacterStage';
 
 export type Emotion =
@@ -125,9 +125,6 @@ const getTimestamp = () => {
 const AmbientAurora = React.memo(function AmbientAurora() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {/* OPTIMIZATION: Replaced blur-[100px] and mix-blend with baked radial gradients.
-        This shifts the rendering from the CPU to the GPU and saves massive mobile battery.
-      */}
       <div
         className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full animate-blob will-change-transform"
         style={{ background: 'radial-gradient(circle, rgba(126,110,227,0.15) 0%, transparent 60%)' }}
@@ -147,9 +144,9 @@ const AmbientAurora = React.memo(function AmbientAurora() {
 
 const NeuralTyping = React.memo(function NeuralTyping() {
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5">
-      <Fingerprint className="text-[#00f0ff] animate-pulse" size={16} />
-      <span className="text-xs font-mono text-[#00f0ff] tracking-widest uppercase animate-pulse">
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5">
+      <Fingerprint className="text-[#00f0ff] animate-pulse" size={14} />
+      <span className="text-[10px] font-mono text-[#00f0ff] tracking-widest uppercase animate-pulse">
         Syncing...
       </span>
     </div>
@@ -157,7 +154,6 @@ const NeuralTyping = React.memo(function NeuralTyping() {
 });
 
 const FloatingOrbs = React.memo(function FloatingOrbs() {
-  // Memoize random values so they don't recalculate and cause jank if parent ever forces a re-render
   const orbs = useMemo(() => {
     return [...Array(8)].map((_, i) => ({
       id: i,
@@ -416,7 +412,7 @@ export function AIChat() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer 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`,
+          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
           'dangerously-allow-browser': 'true'
         },
         body: JSON.stringify({
@@ -497,6 +493,7 @@ export function AIChat() {
         >
           <div className="relative w-full h-full bg-[#05050f]/90 backdrop-blur-3xl rounded-2xl sm:rounded-[2rem] lg:rounded-[3rem] overflow-hidden flex flex-col lg:flex-row">
 
+            {/* Left Column: Hologram Visualizer */}
             <div className="relative w-full lg:w-[40%] h-[180px] sm:h-[220px] md:h-[240px] lg:h-full flex-shrink-0 border-b lg:border-r border-white/5 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.06)_0%,transparent_100%)] flex flex-col items-center justify-center overflow-hidden">
               <motion.div
                 className="absolute inset-0 opacity-[0.12]"
@@ -601,15 +598,32 @@ export function AIChat() {
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col relative z-10 overflow-hidden bg-black/20">
-              <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-white/5 bg-white/[0.02] flex-shrink-0 backdrop-blur-md">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <Terminal size={14} className="text-white/40 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm text-white/40 font-mono tracking-widest uppercase">Ayar_AI // Secure Comm</span>
+            {/* Right Column: macOS IDE Terminal Chat Area */}
+            <div className="flex-1 flex flex-col relative z-10 overflow-hidden bg-[#0d1117]/95 rounded-b-2xl sm:rounded-b-[2rem] lg:rounded-br-[3rem] lg:rounded-bl-none shadow-[inset_1px_0_0_rgba(255,255,255,0.05)]">
+
+              {/* Responsive macOS Terminal Title Bar */}
+              <div className="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b border-white/10 bg-[#161b22] flex-shrink-0">
+                {/* Traffic Lights Container */}
+                <div className="flex items-center gap-1.5 sm:gap-2 w-[60px] sm:w-[80px]">
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56] shadow-[inset_0_1px_4px_rgba(0,0,0,0.3)] border border-[#e0443e]" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e] shadow-[inset_0_1px_4px_rgba(0,0,0,0.3)] border border-[#dea123]" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f] shadow-[inset_0_1px_4px_rgba(0,0,0,0.3)] border border-[#1aab29]" />
                 </div>
+
+                {/* Window Title - Truncates on mobile if too long */}
+                <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 pointer-events-none min-w-0 px-2">
+                  <Terminal size={12} className="text-white/40 flex-shrink-0 sm:w-[14px] sm:h-[14px]" />
+                  <span className="text-[10px] sm:text-xs text-white/50 font-mono tracking-wide truncate">
+                    ayar@suresh-itpro: ~/neural-interface
+                  </span>
+                </div>
+
+                {/* Empty spacer to keep the title perfectly centered */}
+                <div className="w-[60px] sm:w-[80px]"></div>
               </div>
 
-              <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6 lg:space-y-8 hide-scrollbar scroll-smooth">
+              {/* Chat Log - IDE Dark Theme */}
+              <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6 lg:space-y-8 hide-scrollbar scroll-smooth bg-transparent">
                 <AnimatePresence mode="popLayout">
                   {messages.map((message, index) => (
                     <motion.div
@@ -618,39 +632,41 @@ export function AIChat() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.3, delay: index * 0.03 }}
-                      className={`flex flex-col gap-2 ${message.role === 'user' ? 'items-end' : 'items-start'}`}
+                      className={`flex flex-col gap-1.5 sm:gap-2 ${message.role === 'user' ? 'items-end' : 'items-start'}`}
                     >
-                      <div className="flex items-center gap-2 px-1">
-                        <span className={`text-[10px] sm:text-xs font-mono tracking-widest font-bold ${message.role === 'user' ? 'text-[#7e6ee3]' : 'text-[#00f0ff]'}`}>
-                          {message.role === 'user' ? 'GUEST' : 'AYAR_AI'}
+                      {/* CMD Header line */}
+                      <div className="flex items-center gap-2 px-1 max-w-full">
+                        <span className={`text-[10px] sm:text-xs font-mono tracking-wider truncate ${message.role === 'user' ? 'text-[#7e6ee3]' : 'text-[#00f0ff]'}`}>
+                          {message.role === 'user' ? 'root@guest:~$' : 'ayar_ai@system:~$'}
                         </span>
-                        <span className="text-[10px] sm:text-xs font-mono text-white/20">{message.timestamp}</span>
+                        <span className="text-[9px] sm:text-[10px] font-mono text-white/20 flex-shrink-0">[{message.timestamp}]</span>
                       </div>
 
-                      <div className={`flex gap-3 max-w-[92%] sm:max-w-[90%] lg:max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex gap-2 sm:gap-3 w-full max-w-[95%] sm:max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
                         {message.role === 'assistant' && (
                           <motion.div
                             whileHover={{ scale: 1.1, rotate: -5 }}
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg lg:rounded-xl border border-white/10 bg-white/5 p-0.5 flex items-center justify-center flex-shrink-0 shadow-lg overflow-hidden"
+                            className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg border border-white/10 bg-[#161b22] p-0.5 flex items-center justify-center flex-shrink-0 shadow-lg overflow-hidden mt-0.5"
                           >
                             <img src={`${import.meta.env.BASE_URL}avatar.jpg`} alt="AI" className="w-full h-full object-cover rounded-md" />
                           </motion.div>
                         )}
 
+                        {/* Squared-off IDE Style Bubbles with forced Word Wrap */}
                         <motion.div
                           whileHover={{ scale: 1.01 }}
-                          className={`relative px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base leading-relaxed backdrop-blur-md ${message.role === 'assistant'
-                            ? 'bg-white/5 border border-white/10 text-white/90 rounded-2xl rounded-tl-sm shadow-[0_8px_30px_rgba(0,0,0,0.5)]'
-                            : 'bg-gradient-to-br from-[#7e6ee3] to-[#5b6ee3] text-white font-medium rounded-2xl rounded-tr-sm shadow-[0_8px_30px_rgba(126,110,227,0.3)]'
+                          className={`relative px-3.5 sm:px-5 py-2.5 sm:py-4 text-[13px] sm:text-base leading-relaxed break-words min-w-0 w-full overflow-hidden ${message.role === 'assistant'
+                            ? 'bg-[#161b22] border border-white/10 text-[#c9d1d9] rounded-lg rounded-tl-sm shadow-md'
+                            : 'bg-[#7e6ee3]/10 border border-[#7e6ee3]/30 text-white rounded-lg rounded-tr-sm shadow-md font-mono'
                             }`}
                         >
                           {message.role === 'assistant' ? (
                             <div
-                              className="relative z-10 space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-2 [&_a]:text-[#00f0ff] [&_a]:font-bold [&_a]:underline [&_a]:hover:text-[#00d9ff] [&_b]:text-white [&_b]:font-black [&_h3]:text-base sm:[&_h3]:text-lg [&_h3]:font-black [&_h3]:text-[#00f0ff] [&_h3]:mt-3"
+                              className="relative z-10 space-y-3 [&_ul]:list-none [&_ul]:pl-1 sm:[&_ul]:pl-2 [&_li]:before:content-['>_'] [&_li]:before:text-[#00f0ff] [&_li]:before:mr-1.5 sm:[&_li]:before:mr-2 [&_li]:mb-1 [&_li]:break-words [&_p]:mb-2 [&_p]:break-words [&_a]:text-[#00f0ff] [&_a]:font-bold [&_a]:underline [&_a]:hover:text-[#00d9ff] [&_a]:break-all [&_b]:text-white [&_b]:font-black [&_h3]:text-sm sm:[&_h3]:text-lg [&_h3]:font-black [&_h3]:text-[#00f0ff] [&_h3]:mt-3 [&_h3]:break-words"
                               dangerouslySetInnerHTML={{ __html: message.content }}
                             />
                           ) : (
-                            <p className="relative z-10">{message.content}</p>
+                            <p className="relative z-10 break-words">{message.content}</p>
                           )}
                         </motion.div>
                       </div>
@@ -662,14 +678,14 @@ export function AIChat() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex flex-col gap-2 items-start"
+                    className="flex flex-col gap-1.5 sm:gap-2 items-start"
                   >
-                    <span className="text-[10px] sm:text-xs font-mono tracking-widest text-[#00f0ff] font-bold px-1">AYAR_AI</span>
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg lg:rounded-xl border border-white/10 bg-white/5 p-0.5 flex items-center justify-center flex-shrink-0 opacity-50 overflow-hidden">
+                    <span className="text-[10px] sm:text-xs font-mono tracking-wider text-[#00f0ff] px-1">ayar_ai@system:~$</span>
+                    <div className="flex gap-2 sm:gap-3">
+                      <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg border border-white/10 bg-[#161b22] p-0.5 flex items-center justify-center flex-shrink-0 opacity-50 overflow-hidden mt-0.5">
                         <img src={`${import.meta.env.BASE_URL}avatar.jpg`} alt="AI" className="w-full h-full object-cover rounded-md grayscale" />
                       </div>
-                      <div className="px-1 py-2 bg-transparent rounded-2xl flex items-center">
+                      <div className="bg-transparent rounded-lg flex items-center border border-white/5 h-7 sm:h-10">
                         <NeuralTyping />
                       </div>
                     </div>
@@ -678,12 +694,13 @@ export function AIChat() {
                 <div ref={messagesEndRef} className="h-2 sm:h-4 lg:h-6" />
               </div>
 
-              <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8 pt-3 bg-gradient-to-t from-black via-[#05050f]/90 to-transparent z-20">
+              {/* Input Area - Command Line Style */}
+              <div className="px-3 sm:px-6 lg:px-8 pb-3 sm:pb-6 lg:pb-8 pt-3 bg-[#0d1117] z-20 border-t border-white/5">
                 {messages.length === 1 && !isTyping && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-2 sm:gap-3 overflow-x-auto hide-scrollbar pb-3 mb-2 snap-x snap-mandatory"
+                    className="flex gap-2 sm:gap-3 overflow-x-auto hide-scrollbar pb-3 mb-1 sm:mb-2 snap-x snap-mandatory"
                   >
                     {preloadedPrompts.map((prompt, idx) => (
                       <motion.button
@@ -691,39 +708,38 @@ export function AIChat() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.1 }}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.02, y: -1 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => handleSend(prompt)}
-                        className="whitespace-nowrap flex-shrink-0 snap-center px-4 sm:px-5 py-2 sm:py-2.5 border border-white/10 bg-white/5 backdrop-blur-md rounded-full text-xs sm:text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 hover:border-[#00f0ff]/50 transition-all duration-300 shadow-lg"
+                        className="whitespace-nowrap flex-shrink-0 snap-center px-3 sm:px-4 py-1.5 sm:py-2 border border-white/10 bg-[#161b22] rounded-md text-[11px] sm:text-xs font-mono text-white/70 hover:text-[#00f0ff] hover:bg-white/5 hover:border-[#00f0ff]/30 transition-all duration-300"
                       >
-                        {prompt}
+                        $ {prompt}
                       </motion.button>
                     ))}
                   </motion.div>
                 )}
 
-                <form onSubmit={handleSubmit} className="relative flex items-center group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#7e6ee3] via-[#00f0ff] to-[#7e6ee3] rounded-full sm:rounded-[2rem] opacity-20 group-focus-within:opacity-50 blur-md transition-opacity duration-500" />
-                  <div className="relative flex w-full items-center bg-black/60 backdrop-blur-xl border border-white/10 rounded-full p-1.5 shadow-2xl">
-                    <div className="pl-4 pr-2 text-white/30">
-                      <Zap size={16} className="sm:w-[18px] sm:h-[18px] group-focus-within:text-[#00f0ff] transition-colors" />
+                <form onSubmit={handleSubmit} className="relative flex items-center mt-1 w-full">
+                  <div className="relative flex w-full items-center bg-[#161b22] border border-white/10 rounded-lg p-1 sm:p-1.5 shadow-inner focus-within:border-[#00f0ff]/50 transition-colors duration-300">
+                    <div className="pl-2 sm:pl-3 pr-1.5 sm:pr-2 text-[#00f0ff] font-mono font-bold text-sm sm:text-lg">
+                      ❯
                     </div>
                     <input
                       type="text"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      placeholder="Message Ayar..."
+                      placeholder="Enter command..."
                       maxLength={500}
-                      className="w-full bg-transparent border-none text-sm sm:text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-0 py-2.5 sm:py-3 lg:py-3.5 pr-4"
+                      className="w-full min-w-0 bg-transparent border-none text-[13px] sm:text-base font-mono text-white placeholder:text-white/30 focus:outline-none focus:ring-0 py-2 sm:py-2.5 pr-2"
                     />
                     <motion.button
                       type="submit"
                       disabled={!input.trim() || isTyping}
                       whileHover={{ scale: input.trim() && !isTyping ? 1.05 : 1 }}
                       whileTap={{ scale: input.trim() && !isTyping ? 0.95 : 1 }}
-                      className="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-[#7e6ee3] to-[#00f0ff] rounded-full text-black hover:shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="w-7 h-7 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center bg-transparent border border-white/10 rounded-md text-white/50 hover:text-[#00f0ff] hover:border-[#00f0ff]/50 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed mr-0.5 sm:mr-1"
                     >
-                      <Send size={18} className="sm:w-5 sm:h-5 ml-0.5" />
+                      <Send size={14} className="sm:w-[18px] sm:h-[18px]" />
                     </motion.button>
                   </div>
                 </form>

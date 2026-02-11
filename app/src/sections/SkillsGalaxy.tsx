@@ -165,8 +165,21 @@ export function SkillsGalaxy() {
 
     let animationId: number;
     let time = 0;
+    let isVisible = false;
+
+    // Use IntersectionObserver to start/stop animation
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    observer.observe(container);
 
     const animate = () => {
+      animationId = requestAnimationFrame(animate);
+      if (!isVisible) return;
+
       time += 0.01;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -208,8 +221,6 @@ export function SkillsGalaxy() {
         ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
         ctx.fill();
       }
-
-      animationId = requestAnimationFrame(animate);
     };
 
     animate();
@@ -217,6 +228,7 @@ export function SkillsGalaxy() {
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
+      observer.disconnect();
     };
   }, []);
 

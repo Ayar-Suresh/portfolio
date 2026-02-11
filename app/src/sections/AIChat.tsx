@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, User, Sparkles, Terminal, Cpu, Zap, Fingerprint, Code2, Brain, Rocket, Activity, Radio, Waves } from 'lucide-react';
+import { Send, Sparkles, Terminal, Zap, Fingerprint, Brain, Activity, Waves } from 'lucide-react';
 import { CharacterStage } from '../components/CharacterStage';
 
 export type Emotion =
@@ -90,7 +90,7 @@ const getTimestamp = () => {
 };
 
 // Premium Vercel/Apple style Background Aurora
-function AmbientAurora() {
+const AmbientAurora = React.memo(function AmbientAurora() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#7e6ee3] rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob" />
@@ -99,10 +99,10 @@ function AmbientAurora() {
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
     </div>
   );
-}
+});
 
 // Neural Link Typing Indicator
-function NeuralTyping() {
+const NeuralTyping = React.memo(function NeuralTyping() {
   return (
     <div className="flex items-center gap-2 px-3 py-1.5">
       <Fingerprint className="text-[#00f0ff] animate-pulse" size={16} />
@@ -111,10 +111,10 @@ function NeuralTyping() {
       </span>
     </div>
   );
-}
+});
 
 // Optimized Floating Particles - Less resource intensive
-function FloatingOrbs() {
+const FloatingOrbs = React.memo(function FloatingOrbs() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {[...Array(8)].map((_, i) => {
@@ -152,10 +152,10 @@ function FloatingOrbs() {
       })}
     </div>
   );
-}
+});
 
 // Enhanced Hologram Display Component
-function HologramDisplay({ emotion }: { emotion: Emotion }) {
+const HologramDisplay = React.memo(function HologramDisplay({ emotion }: { emotion: Emotion }) {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       {/* Outer Energy Ring */}
@@ -245,10 +245,10 @@ function HologramDisplay({ emotion }: { emotion: Emotion }) {
       })}
     </div>
   );
-}
+});
 
 // Hologram Base Platform
-function HologramPlatform() {
+const HologramPlatform = React.memo(function HologramPlatform() {
   return (
     <div className="absolute bottom-4 sm:bottom-6 lg:bottom-[15%] w-36 sm:w-48 md:w-56 lg:w-80 h-14 sm:h-16 lg:h-20 flex items-center justify-center pointer-events-none perspective-1000">
       {/* Main Platform Ring */}
@@ -302,10 +302,10 @@ function HologramPlatform() {
       })}
     </div>
   );
-}
+});
 
 // Data Stream Effect
-function DataStream({ side }: { side: 'left' | 'right' }) {
+const DataStream = React.memo(function DataStream({ side }: { side: 'left' | 'right' }) {
   return (
     <div className={`absolute top-0 ${side === 'left' ? 'left-3 sm:left-5' : 'right-3 sm:right-5'} h-full w-[1px] overflow-hidden opacity-20`}>
       {[...Array(3)].map((_, i) => (
@@ -324,7 +324,7 @@ function DataStream({ side }: { side: 'left' | 'right' }) {
       ))}
     </div>
   );
-}
+});
 
 export function AIChat() {
   const [messages, setMessages] = useState<Message[]>([
@@ -385,7 +385,7 @@ export function AIChat() {
   }, [messages, isTyping]);
 
 
-  const handleSend = async (content: string) => {
+  const handleSend = useCallback(async (content: string) => {
     if (!content.trim()) return;
 
     resetIdleTimer();
@@ -443,12 +443,12 @@ export function AIChat() {
     } finally {
       setIsTyping(false);
     }
-  };
+  }, [messages, resetIdleTimer, triggerEmotion]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     handleSend(input);
-  };
+  }, [handleSend, input]);
 
   return (
     <section id="about" className="relative py-6 sm:py-8 lg:py-20 min-h-screen flex items-center justify-center bg-transparent overflow-hidden">

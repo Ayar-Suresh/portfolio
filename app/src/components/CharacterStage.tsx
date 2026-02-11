@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -91,7 +91,7 @@ interface CharacterStageProps {
     className?: string;
 }
 
-export function CharacterStage({ currentEmotion, className = "" }: CharacterStageProps) {
+const CharacterStage = React.memo(function CharacterStage({ currentEmotion, className = "" }: CharacterStageProps) {
     const [displayedEmotion, setDisplayedEmotion] = useState<Emotion>('idle');
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
@@ -292,7 +292,6 @@ export function CharacterStage({ currentEmotion, className = "" }: CharacterStag
             </div>
         </div>
     );
-}
+});
 
-// Add strict type export
-export type { CharacterStageProps };
+export { CharacterStage };

@@ -93,7 +93,7 @@ interface CharacterStageProps {
 
 const CharacterStage = React.memo(function CharacterStage({ currentEmotion, className = "" }: CharacterStageProps) {
     const [displayedEmotion, setDisplayedEmotion] = useState<Emotion>('idle');
-    const [isLoading, setIsLoading] = useState(true);
+
     const [hasError, setHasError] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
 
@@ -206,7 +206,7 @@ const CharacterStage = React.memo(function CharacterStage({ currentEmotion, clas
     };
 
     const handleLoadSuccess = () => {
-        setIsLoading(false);
+
         setHasError(false);
     };
 

@@ -8,11 +8,12 @@ import {
   Terminal,
   Smartphone,
   Bot,
-  Sparkles,
   MessageSquare,
   Workflow,
-  Wifi,
-  Activity
+  Activity,
+  Cpu,
+  Database,
+  Shield
 } from 'lucide-react';
 
 interface Skill {
@@ -26,116 +27,161 @@ interface Skill {
 
 const skills: Skill[] = [
   // Frontend
-  { name: 'React', icon: Code2, level: 95, category: 'Frontend', color: '#61dafb', description: 'Modern UI development' },
-  { name: 'TypeScript', icon: Terminal, level: 92, category: 'Frontend', color: '#3178c6', description: 'Type-safe code' },
-  { name: 'Next.js', icon: Layers, level: 88, category: 'Frontend', color: '#ffffff', description: 'Full-stack solutions' },
-  { name: 'Tailwind CSS', icon: Palette, level: 95, category: 'Frontend', color: '#38bdf8', description: 'Rapid layout styling' },
+  { name: 'React', icon: Code2, level: 95, category: 'Frontend', color: '#61dafb', description: 'Component Architecture' },
+  { name: 'TypeScript', icon: Terminal, level: 92, category: 'Frontend', color: '#3178c6', description: 'Static Typing System' },
+  { name: 'Next.js', icon: Layers, level: 88, category: 'Frontend', color: '#ffffff', description: 'SSR & Edge Runtime' },
+  { name: 'Tailwind', icon: Palette, level: 95, category: 'Frontend', color: '#38bdf8', description: 'Utility-First CSS' },
 
   // App Development
-  { name: 'Flutter', icon: Smartphone, level: 90, category: 'App Dev', color: '#42a5f5', description: 'Cross-platform apps' },
-  { name: 'Dart', icon: Terminal, level: 85, category: 'App Dev', color: '#0175c2', description: 'App logic & optimized UI' },
+  { name: 'Flutter', icon: Smartphone, level: 90, category: 'App Dev', color: '#42a5f5', description: 'Multi-Platform Core' },
+  { name: 'Dart', icon: Terminal, level: 85, category: 'App Dev', color: '#0175c2', description: 'Optimized VM' },
 
   // AI Integration
-  { name: 'OpenAI API', icon: Bot, level: 85, category: 'AI Integration', color: '#10a37f', description: 'AI integration into real-world applications' },
-  { name: 'AI Features', icon: Sparkles, level: 82, category: 'AI Integration', color: '#a855f7', description: 'AI integration into real-world applications' },
-  { name: 'Prompt Eng', icon: MessageSquare, level: 88, category: 'AI Integration', color: '#ec4899', description: 'AI integration into real-world applications' },
-  { name: 'Automation', icon: Workflow, level: 80, category: 'AI Integration', color: '#f43f5e', description: 'AI integration into real-world applications' },
+  { name: 'OpenAI', icon: Bot, level: 85, category: 'AI Integration', color: '#10a37f', description: 'LLM Integration' },
+  { name: 'RAG Systems', icon: Database, level: 82, category: 'AI Integration', color: '#a855f7', description: 'Vector Search' },
+  { name: 'Prompt Eng', icon: MessageSquare, level: 88, category: 'AI Integration', color: '#ec4899', description: 'Context Optimization' },
+  { name: 'Agents', icon: Workflow, level: 80, category: 'AI Integration', color: '#f43f5e', description: 'Autonomous Loops' },
 
   // Programming
-  { name: 'Python', icon: Terminal, level: 85, category: 'Programming', color: '#f59e0b', description: 'Scripting & backend logic' },
-  { name: 'C', icon: Code2, level: 75, category: 'Programming', color: '#9ca3af', description: 'Systems programming' },
-  { name: 'C++', icon: Code2, level: 78, category: 'Programming', color: '#00599c', description: 'Performance critical code' },
-  { name: 'Java', icon: Code2, level: 80, category: 'Programming', color: '#b07219', description: 'Enterprise applications' },
+  { name: 'Python', icon: Terminal, level: 85, category: 'Programming', color: '#f59e0b', description: 'Data & Scripting' },
+  { name: 'C++', icon: Code2, level: 78, category: 'Programming', color: '#00599c', description: 'System Performance' },
+  { name: 'Java', icon: Code2, level: 80, category: 'Programming', color: '#b07219', description: 'Enterprise Backend' },
 
   // Networking & Systems
-  { name: 'Net T-shoot', icon: Wifi, level: 80, category: 'Networking', color: '#10b981', description: 'Network troubleshooting' },
-  { name: 'Infrastructure', icon: Server, level: 75, category: 'Networking', color: '#3b82f6', description: 'System infrastructure support' },
-  { name: 'Diagnostics', icon: Activity, level: 78, category: 'Networking', color: '#ef4444', description: 'System diagnostics & health' },
+  { name: 'Network Sec', icon: Shield, level: 80, category: 'Networking', color: '#10b981', description: 'Packet Analysis' },
+  { name: 'DevOps', icon: Server, level: 75, category: 'Networking', color: '#3b82f6', description: 'CI/CD Pipelines' },
+  { name: 'System Ops', icon: Activity, level: 78, category: 'Networking', color: '#ef4444', description: 'Monitoring & Health' },
 ];
 
 const categories = ['All', 'Frontend', 'App Dev', 'AI Integration', 'Programming', 'Networking'];
 
-function SkillNode({ skill, index, isActive }: { skill: Skill; index: number; isActive: boolean }) {
+function SkillNode({ skill, index, isActive, position }: { skill: Skill; index: number; isActive: boolean; position: { x: number; y: number } }) {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const Icon = skill.icon;
+  const { x, y } = position;
+
+  // Smart Positioning Logic
+  const isBottom = y > 50; // slightly offset from center
+  const isRight = x > 100; // far right
+  const isLeft = x < -100; // far left
+
+  // Base classes
+  let popoverClasses = "absolute w-48 z-50 pointer-events-none mb-4 ";
+  let originY = 0;
+
+  // Vertical Position (Flip if too close to bottom/top)
+  if (isBottom) {
+    popoverClasses = popoverClasses.replace("mb-4", "mb-4 bottom-full"); // Show Above
+    originY = 10;
+  } else {
+    popoverClasses = popoverClasses.replace("mb-4", "mt-4 top-full"); // Show Below
+    originY = -10;
+  }
+
+  // Horizontal Position (Shift if too close to edge)
+  if (isRight) {
+    popoverClasses += "right-0 translate-x-4"; // Shift Left
+  } else if (isLeft) {
+    popoverClasses += "left-0 -translate-x-4"; // Shift Right
+  } else {
+    popoverClasses += "left-1/2 -translate-x-1/2"; // Center
+  }
 
   return (
     <motion.div
       ref={nodeRef}
       initial={{ opacity: 0, scale: 0 }}
-      whileInView={{ opacity: isActive ? 1 : 0.3, scale: 1 }}
+      whileInView={{ opacity: isActive ? 1 : 0.1, scale: isActive ? 1 : 0.8 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative group"
+      className={`absolute group ${isHovered ? 'z-50' : 'z-10'}`} // Elevate z-index on hover
+      style={{
+        x: '-50%',
+        y: '-50%',
+      }}
       data-cursor-hover
     >
-      {/* Glow effect */}
+      {/* Hexagonal Node Shape */}
       <div
-        className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-300 ${isHovered ? 'opacity-60' : 'opacity-0'
-          }`}
-        style={{ backgroundColor: skill.color }}
-      />
-
-      {/* Node */}
-      <div
-        className={`relative w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${isHovered ? 'scale-110' : ''
-          }`}
-        style={{
-          background: `linear-gradient(135deg, ${skill.color}20, ${skill.color}10)`,
-          border: `2px solid ${isHovered ? skill.color : skill.color + '40'}`,
-          boxShadow: isHovered ? `0 0 30px ${skill.color}40` : 'none',
-        }}
+        className={`relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center transition-all duration-300 ${isHovered ? 'scale-110' : ''}`}
       >
-        <Icon size={20} className="md:w-7 md:h-7" color={skill.color} />
+        {/* Hexagon Background */}
+        <div
+          className="absolute inset-0 bg-[#161b22] border border-[#30363d] clip-path-hexagon transition-colors duration-300 group-hover:border-[#00f0ff]/50 md:group-hover:bg-[#1f242c]"
+          style={{
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+            boxShadow: isHovered ? `0 0 20px ${skill.color}40` : 'none'
+          }}
+        />
+
+        {/* Inner Glow */}
+        <div
+          className="absolute inset-1 bg-[#0d1117] clip-path-hexagon flex items-center justify-center"
+          style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+        >
+          <Icon size={24} color={skill.color} className={`transition-all duration-300 ${isHovered ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`} />
+        </div>
+
+        {/* Level Ring (Circular Pulse) */}
+        {isHovered && (
+          <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: skill.color }} />
+        )}
       </div>
 
       {/* Label */}
-      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
-        <span className="text-xs text-white/70 font-medium">{skill.name}</span>
+      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap z-20">
+        <span className={`text-[10px] md:text-xs font-mono font-medium tracking-wider transition-colors duration-300 ${isHovered ? 'text-[#00f0ff]' : 'text-[#8b949e]'}`}>
+          {skill.name.toUpperCase()}
+        </span>
       </div>
 
-      {/* Hover Card */}
+      {/* Tech Spec Popover - Only on Hover */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: 10 }}
+        initial={{ opacity: 0, scale: 0.9, y: originY }}
         animate={{
           opacity: isHovered ? 1 : 0,
-          scale: isHovered ? 1 : 0.8,
-          y: isHovered ? 0 : 10,
+          scale: isHovered ? 1 : 0.9,
+          y: isHovered ? 0 : originY,
         }}
-        className="absolute -top-36 left-1/2 -translate-x-1/2 w-56 z-20 pointer-events-none"
+        className={popoverClasses}
       >
-        <div className="glass-strong rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Icon size={16} color={skill.color} />
-            <span className="font-semibold text-white">{skill.name}</span>
+        <div className="ide-panel p-3 bg-[#0d1117]/95 backdrop-blur-md border border-[#30363d] shadow-2xl relative">
+          {/* Connector Line Logic based on position */}
+          {isBottom ? (
+            <div className={`absolute -bottom-4 w-[1px] h-4 bg-[#30363d] ${isRight ? 'right-4' : isLeft ? 'left-4' : 'left-1/2 -translate-x-1/2'}`} />
+          ) : (
+            <div className={`absolute -top-4 w-[1px] h-4 bg-[#30363d] ${isRight ? 'right-4' : isLeft ? 'left-4' : 'left-1/2 -translate-x-1/2'}`} />
+          )}
+
+          <div className="flex items-center justify-between mb-2 pb-2 border-b border-[#30363d]">
+            <span className="text-[10px] text-[#8b949e] font-mono">SYS.MODULE</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-[#2ea043] animate-pulse" />
           </div>
+
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-white/60">
-              <span>Proficiency</span>
-              <span>{skill.level}%</span>
+            <div className="flex justify-between text-xs font-mono">
+              <span className="text-[#00f0ff]">Load</span>
+              <span className="text-white">{skill.level}%</span>
             </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+
+            {/* Progress Bar */}
+            <div className="h-1 bg-[#161b22] rounded-full overflow-hidden border border-[#30363d]">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${skill.level}%` }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="h-full rounded-full"
-                style={{ backgroundColor: skill.color }}
+                transition={{ duration: 0.5 }}
+                className="h-full bg-gradient-to-r from-[#7e6ee3] to-[#00f0ff]"
               />
             </div>
-          </div>
-          <div className="mt-2 text-xs text-white/40 font-medium">
-            {skill.category}
-          </div>
-          {skill.description && (
-            <div className="mt-1 text-xs text-white/60 italic border-t border-white/10 pt-1">
-              {skill.description}
+
+            <div className="text-[10px] text-[#8b949e] font-mono leading-tight mt-1">
+              {'>'} {skill.description}
             </div>
-          )}
+          </div>
         </div>
       </motion.div>
     </motion.div>
@@ -147,7 +193,7 @@ export function SkillsGalaxy() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Animated connections canvas
+  // Animated connections canvas (Cyberpunk Grid)
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -180,47 +226,63 @@ export function SkillsGalaxy() {
       animationId = requestAnimationFrame(animate);
       if (!isVisible) return;
 
-      time += 0.01;
+      time += 0.05;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw constellation lines
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = Math.min(canvas.width, canvas.height) * 0.35;
+      const width = canvas.width;
+      const height = canvas.height;
+      const cx = width / 2;
+      const cy = height / 2;
 
-      // Draw orbital rings
-      for (let i = 1; i <= 3; i++) {
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius * (i / 3), 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(126, 110, 227, ${0.05 * i})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
+      // Draw Grid Background
+      ctx.strokeStyle = '#1e2329'; // Very subtle grid color
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+
+      // Vertical Lines (Perspective effect)
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += gridSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
       }
-
-      // Draw connecting lines between random points
-      const numLines = 8;
-      for (let i = 0; i < numLines; i++) {
-        const angle1 = (i / numLines) * Math.PI * 2 + time * 0.2;
-        const angle2 = ((i + 2) / numLines) * Math.PI * 2 + time * 0.15;
-
-        const x1 = centerX + Math.cos(angle1) * radius * 0.8;
-        const y1 = centerY + Math.sin(angle1) * radius * 0.8;
-        const x2 = centerX + Math.cos(angle2) * radius * 0.6;
-        const y2 = centerY + Math.sin(angle2) * radius * 0.6;
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(126, 110, 227, ${0.2 + Math.sin(time + i) * 0.1})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Draw glowing dots at endpoints
-        ctx.beginPath();
-        ctx.arc(x1, y1, 3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
-        ctx.fill();
+      for (let y = 0; y <= height; y += gridSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
       }
+      ctx.stroke();
+
+      // Scanline Effect
+      const scanY = (time * 50) % height;
+      ctx.beginPath();
+      ctx.moveTo(0, scanY);
+      ctx.lineTo(width, scanY);
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Rotating Radar Line
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      const radarAngle = time * 0.02;
+      const rx = cx + Math.cos(radarAngle) * Math.max(width, height);
+      const ry = cy + Math.sin(radarAngle) * Math.max(width, height);
+      ctx.lineTo(rx, ry);
+
+      const gradient = ctx.createLinearGradient(cx, cy, rx, ry);
+      gradient.addColorStop(0, 'rgba(126, 110, 227, 0)');
+      gradient.addColorStop(1, 'rgba(126, 110, 227, 0.1)');
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 50; // Wide beam look
+      ctx.stroke();
+
+      // Central Hub Pulse
+      ctx.beginPath();
+      ctx.arc(cx, cy, 50 + Math.sin(time * 0.1) * 5, 0, Math.PI * 2);
+      ctx.strokeStyle = '#7e6ee3';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
     };
 
     animate();
@@ -237,7 +299,10 @@ export function SkillsGalaxy() {
     : skills.filter(s => s.category === activeCategory);
 
   return (
-    <section id="skills" className="relative py-24 overflow-hidden">
+    <section id="skills" className="relative py-24 overflow-hidden bg-[#0d1117]">
+      {/* Background Grid Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(48,54,61,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(48,54,61,0.2)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -247,42 +312,45 @@ export function SkillsGalaxy() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-[#7e6ee3] text-sm font-medium uppercase tracking-wider mb-4 block">
-            My Expertise
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-            Skills <span className="gradient-text">Galaxy</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#161b22] border border-[#30363d] text-[#00f0ff] font-mono text-xs mb-4">
+            <Activity size={12} className="animate-pulse" />
+            <span>SYSTEM_DIAGNOSTICS</span>
+          </div>
+
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 font-mono">
+            Tech <span className="gradient-text">Matrix</span>
           </h2>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            A constellation of technologies I work with. Hover over each node to explore my proficiency.
+          <p className="text-[#8b949e] text-lg max-w-2xl mx-auto font-mono">
+            // Core competencies and active modules.<br />
+            // Hover nodes for detailed status.
           </p>
         </motion.div>
 
-        {/* Category Filter */}
+        {/* Category Filter - Terminal Tabs Style */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-16"
+          className="flex flex-wrap justify-center gap-2 mb-16"
         >
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === category
-                ? 'bg-gradient-to-r from-[#7e6ee3] to-[#5b6ee3] text-white shadow-lg shadow-[#7e6ee3]/30'
-                : 'glass text-white/70 hover:text-white hover:bg-white/10'
+              className={`px-4 py-2 text-xs font-mono border transition-all duration-300 ${activeCategory === category
+                ? 'bg-[#161b22] border-[#00f0ff] text-[#00f0ff] shadow-[0_0_10px_rgba(0,240,255,0.2)]'
+                : 'bg-transparent border-[#30363d] text-[#8b949e] hover:border-[#8b949e] hover:text-white'
                 }`}
               data-cursor-hover
             >
-              {category}
+              [{category.toUpperCase()}]
             </button>
           ))}
         </motion.div>
 
-        {/* Skills Constellation */}
-        <div ref={containerRef} className="relative h-[400px] md:h-[500px]">
+        {/* Skills Constellation Container */}
+        <div ref={containerRef} className="relative h-[500px] md:h-[600px] w-full border-y border-[#30363d] bg-[#0d1117]/50 backdrop-blur-sm">
           {/* Canvas for connections */}
           <canvas
             ref={canvasRef}
@@ -291,39 +359,52 @@ export function SkillsGalaxy() {
 
           {/* Skill Nodes */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-full h-full max-w-md max-h-md">
-              {/* Center node */}
+            <div className="relative w-full h-full max-w-2xl max-h-2xl">
+              {/* Center Hub */}
               <motion.div
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
               >
-                <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-gradient-to-r from-[#7e6ee3] to-[#5b6ee3] flex items-center justify-center glow-purple">
-                  <Code2 size={40} className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center relative">
+                  <div className="absolute inset-0 border-2 border-[#7e6ee3] rounded-full animate-[spin_10s_linear_infinite]" />
+                  <div className="absolute inset-2 border border-[#00f0ff] rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-50" />
+                  <div className="w-16 h-16 rounded-full bg-[#161b22] border border-[#30363d] flex items-center justify-center shadow-[0_0_30px_rgba(126,110,227,0.3)]">
+                    <Cpu size={32} className="text-[#00f0ff]" />
+                  </div>
+
+                  {/* Data streams radiating out */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full animate-ping opacity-10 bg-[#7e6ee3] rounded-full -z-10" />
                 </div>
               </motion.div>
 
-              {/* Orbital nodes */}
+              {/* Orbital nodes Layout - Spiraling out */}
               {filteredSkills.map((skill, index) => {
-                const angle = (index / filteredSkills.length) * Math.PI * 2 - Math.PI / 2;
-                const radius = 180;
+                const total = filteredSkills.length;
+                const angle = (index / total) * Math.PI * 2;
+                // Spiral effect: radius increases slightly with index to prevent perfect circle look
+                const spiralOffset = (index % 2 === 0 ? 0 : 40);
+                const radius = 160 + spiralOffset + (window.innerWidth < 768 ? -60 : 60);
+
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
 
                 return (
                   <div
                     key={skill.name}
-                    className="absolute top-1/2 left-1/2"
+                    className="absolute"
                     style={{
-                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                      left: `calc(50% + ${x}px)`,
+                      top: `calc(50% + ${y}px)`,
                     }}
                   >
                     <SkillNode
                       skill={skill}
                       index={index}
                       isActive={activeCategory === 'All' || skill.category === activeCategory}
+                      position={{ x, y }}
                     />
                   </div>
                 );
@@ -332,26 +413,20 @@ export function SkillsGalaxy() {
           </div>
         </div>
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16"
-        >
+        {/* System Stats Footer */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#30363d] mt-16 border border-[#30363d] max-w-4xl mx-auto">
           {[
-            { label: 'Technologies', value: '10+' },
-            { label: 'Years Experience', value: '2.5+' },
-            { label: 'Projects Completed', value: '17+' },
-            { label: 'Code Commits', value: '1K+' },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">{stat.value}</div>
-              <div className="text-sm text-white/60">{stat.label}</div>
+            { label: 'MODULES', value: '18 ACTIVE' },
+            { label: 'UPTIME', value: '2.5 YRS' },
+            { label: 'DEPLOYMENTS', value: '17 TOTAL' },
+            { label: 'COMMITS', value: '1K+ LOGGED' },
+          ].map((stat, i) => (
+            <div key={i} className="bg-[#0d1117] p-4 text-center group hover:bg-[#161b22] transition-colors">
+              <div className="text-lg font-bold text-[#e2e8f0] font-mono group-hover:text-[#00f0ff] transition-colors">{stat.value}</div>
+              <div className="text-[10px] text-[#8b949e] font-mono tracking-widest">{stat.label}</div>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

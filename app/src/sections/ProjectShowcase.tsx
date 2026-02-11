@@ -7,6 +7,9 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Code2,
+  Terminal,
+  Folder
 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
@@ -98,14 +101,14 @@ const projects: Project[] = [
     ],
     liveUrl: 'https://otakunexa.nexa-go.workers.dev/',
     githubUrl: 'https://github.com/Ayar-Suresh/OtaKuNexaStore.git',
-    color: '#ff4d4d', // Bold red to match the "Unleash Your Otaku Soul" energy
+    color: '#ff4d4d',
   },
   {
     id: '4',
     title: 'Status Saver Pro',
     description: 'High-performance WhatsApp status management tool.',
     longDescription: 'A robust utility application designed to save, manage, and repost WhatsApp statuses instantly. Features a clean glassmorphic UI, an intelligent file caching system to manage storage efficiently, and a built-in media player for seamless previewing of videos and images.',
-    image: `${import.meta.env.BASE_URL}whatsapp1.jpg`, // Ensure you have a matching image
+    image: `${import.meta.env.BASE_URL}whatsapp1.jpg`,
     images: [
       `${import.meta.env.BASE_URL}whatsapp1.jpg`,
       `${import.meta.env.BASE_URL}whatsapp2.jpg`,
@@ -117,7 +120,7 @@ const projects: Project[] = [
       { label: 'Scan Time', value: '<0.5s' },
       { label: 'Frame Rate', value: '60fps' },
     ],
-    liveUrl: 'https://raw.githubusercontent.com/Ayar-Suresh/WhatsApp_Status_Saver/main/WhatsApp_byAhir.apk', // Add Play Store link if available
+    liveUrl: 'https://raw.githubusercontent.com/Ayar-Suresh/WhatsApp_Status_Saver/main/WhatsApp_byAhir.apk',
     githubUrl: '',
     color: '#25D366',
     isPrivate: true,
@@ -136,9 +139,9 @@ const projects: Project[] = [
     ],
     tags: ['HTML5', 'CSS3', 'JavaScript', 'SEO', 'Asset Optimization'],
     stats: [
-      { label: 'Lighthouse', value: '98/100' }, // Google's Dev Performance Score
-      { label: 'SEO Score', value: '70%' },     // Technical SEO implementation
-      { label: 'Load Time', value: '<2s' },    // Render speed
+      { label: 'Lighthouse', value: '98/100' },
+      { label: 'SEO Score', value: '70%' },
+      { label: 'Load Time', value: '<2s' },
     ],
     liveUrl: 'https://ayar-suresh.github.io/construction-co/',
     githubUrl: 'git@github.com:Ayar-Suresh/construction-co.git ',
@@ -166,7 +169,7 @@ const projects: Project[] = [
     ],
     liveUrl: 'https://ayar-suresh.github.io/transport/',
     githubUrl: 'git@github.com:Ayar-Suresh/transport.git',
-    color: '#dc2626', // Truck Red/Industrial Red
+    color: '#dc2626',
   }
 ];
 
@@ -181,17 +184,8 @@ function ProjectCard({
   onClick: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setMousePosition({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
+  // Removed mouse move effect for cleaner IDE look, replaced with cleaner hover state
   return (
     <motion.div
       ref={cardRef}
@@ -200,86 +194,65 @@ function ProjectCard({
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       onClick={onClick}
-      onMouseMove={handleMouseMove}
-      // NO MARGIN OR PADDING HERE. This keeps the card size consistent.
-      className="group relative flex-shrink-0 w-[85vw] sm:w-[600px] md:w-[800px] cursor-pointer"
+      className="group relative flex-shrink-0 w-[85vw] sm:w-[500px] md:w-[600px] cursor-pointer"
       data-cursor-hover
     >
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"
-        style={{
-          background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, ${project.color}20 0%, transparent 50%)`,
-        }}
-      />
-
-      <div className="relative aspect-[4/3] sm:aspect-[2/1] rounded-2xl overflow-hidden glass border border-white/10 group-hover:border-white/20 transition-all duration-500">
-        <div className="absolute inset-0">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+      {/* IDE Window Container */}
+      <div className="ide-panel overflow-hidden transition-all duration-300 group-hover:border-[#00f0ff]/50 shadow-2xl">
+        {/* Window Header */}
+        <div className="mac-window-header justify-between py-2">
+          <div className="flex gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Folder size={12} className="text-[#8b949e]" />
+            <span className="text-[10px] font-mono text-[#8b949e]">{project.title.toLowerCase().replace(/\s+/g, '-')}</span>
+          </div>
+          <div className="w-8" />
         </div>
 
-        <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end pointer-events-none">
-          <div className="hidden sm:flex flex-wrap gap-2 mb-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-            {project.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="px-2 py-0.5 text-[10px] bg-white/10 backdrop-blur-sm rounded-md text-white/80"
-              >
-                {tag}
-              </span>
-            ))}
+        {/* Content Area */}
+        <div className="relative aspect-[16/9] overflow-hidden bg-[#0d1117]">
+          {/* Image */}
+          <div className="absolute inset-0">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 block"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/20 to-transparent" />
           </div>
 
-          <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#00f0ff] transition-colors duration-300 shadow-lg">
-            {project.title}
-          </h3>
-
-          <p className="text-white/80 text-xs line-clamp-2 mb-0 opacity-90">
-            {project.description}
-          </p>
-
-          <div className="absolute top-4 right-4 flex gap-2 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-auto">
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-colors"
-            >
-              <ExternalLink size={14} className="text-white" />
-            </a>
-
-            {project.isPrivate ? (
-              <div
-                className="w-8 h-8 rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center cursor-not-allowed opacity-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert("This project is private.");
-                }}
-              >
-                <Github size={14} className="text-white" />
+          {/* Overlay Content */}
+          <div className="absolute inset-0 p-6 flex flex-col justify-end">
+            <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              <div className="flex flex-wrap gap-2 mb-3">
+                {project.tags.slice(0, 3).map((tag) => (
+                  <span key={tag} className="text-[10px] font-mono px-2 py-1 rounded bg-[#161b22] border border-[#30363d] text-[#8b949e]">
+                    {tag}
+                  </span>
+                ))}
               </div>
-            ) : (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-colors"
-              >
-                <Github size={14} className="text-white" />
-              </a>
-            )}
+
+              <h3 className="text-xl font-bold text-white mb-2 font-mono group-hover:text-[#00f0ff] transition-colors">
+                {project.title}
+              </h3>
+
+              <p className="text-sm text-[#8b949e] line-clamp-2 font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                {project.description}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="absolute top-4 left-4 w-8 h-8 rounded-full glass flex items-center justify-center pointer-events-none">
-          <span className="text-xs font-bold" style={{ color: project.color }}>
-            0{index + 1}
+        {/* Bottom Status Bar */}
+        <div className="px-3 py-1.5 bg-[#161b22] border-t border-[#30363d] flex justify-between items-center text-[10px] text-[#8b949e] font-mono">
+          <span>{project.isPrivate ? "Private" : "Public"}</span>
+          <span className="flex items-center gap-1">
+            <Code2 size={10} />
+            TypeScript
           </span>
         </div>
       </div>
@@ -331,12 +304,14 @@ export function ProjectShowcase() {
   // --- Scroll Logic ---
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = window.innerWidth < 640 ? window.innerWidth * 0.92 : 824;
+    const scrollAmount = window.innerWidth < 640 ? window.innerWidth * 0.92 : 624;
     scrollContainerRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
     });
   };
+
+
 
   const scrollModal = (direction: 'left' | 'right') => {
     if (!modalScrollContainerRef.current) return;
@@ -411,25 +386,26 @@ export function ProjectShowcase() {
             className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6"
           >
             <div>
-              <span className="text-[#7e6ee3] text-sm font-medium uppercase tracking-wider mb-2 md:mb-4 block">
-                Featured Work
+              <span className="text-[#00f0ff] text-xs font-mono mb-2 md:mb-4 block flex items-center gap-2">
+                <Terminal size={12} />
+                ~/projects
               </span>
-              <h2 className="text-3xl md:text-4xl sm:text-5xl font-bold">
-                Project <span className="gradient-text">Showcase</span>
+              <h2 className="text-3xl md:text-4xl sm:text-5xl font-bold font-mono">
+                Code <span className="gradient-text">Repositories</span>
               </h2>
             </div>
 
             <div className="flex gap-3 relative z-20">
               <button
                 onClick={() => scroll('left')}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full glass flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                className="w-10 h-10 md:w-12 md:h-12 rounded bg-[#161b22] border border-[#30363d] flex items-center justify-center text-[#8b949e] hover:text-[#58a6ff] hover:border-[#58a6ff] transition-all duration-300 cursor-pointer"
                 data-cursor-hover
               >
                 <ChevronLeft size={20} className="md:w-6 md:h-6" />
               </button>
               <button
                 onClick={() => scroll('right')}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full glass flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                className="w-10 h-10 md:w-12 md:h-12 rounded bg-[#161b22] border border-[#30363d] flex items-center justify-center text-[#8b949e] hover:text-[#58a6ff] hover:border-[#58a6ff] transition-all duration-300 cursor-pointer"
                 data-cursor-hover
               >
                 <ChevronRight size={20} className="md:w-6 md:h-6" />
@@ -441,19 +417,14 @@ export function ProjectShowcase() {
         {/* --- Project List Scroll Container --- */}
         <div
           ref={scrollContainerRef}
-          // No padding on the container to prevent shrinking.
-          className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-4"
+          className="flex gap-4 md:gap-8 overflow-x-auto hide-scrollbar pb-10"
           style={{ scrollSnapType: 'x mandatory' }}
         >
           {projects.map((project, index) => (
             <div
               key={project.id}
               style={{ scrollSnapAlign: 'start' }}
-              // --- THIS WRAPPER FIXES IT ---
-              // first:pl-6 = Padding Left ONLY on the first item
-              // last:pr-6 = Padding Right ONLY on the last item
-              // flex-shrink-0 = Prevents shrinking
-              className="flex-shrink-0 first:pl-6 md:first:pl-12 last:pr-6 md:last:pr-12"
+              className="flex-shrink-0 first:pl-6 md:first:pl-12 last:pr-6 md:last:pr-12 py-2" // Added py-2 for shadow space
             >
               <ProjectCard
                 project={project}
@@ -464,12 +435,13 @@ export function ProjectShowcase() {
           ))}
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 mt-8">
+        {/* Scrollbar Indicator */}
+        <div className="max-w-7xl mx-auto px-6 mt-4">
           <div className="flex gap-2 justify-center">
             {projects.map((_, index) => (
               <div
                 key={index}
-                className="w-8 h-1 rounded-full bg-white/10"
+                className="w-8 h-1 rounded-full bg-[#30363d]"
               />
             ))}
           </div>
@@ -478,10 +450,24 @@ export function ProjectShowcase() {
 
       {/* --- Project Detail Modal --- */}
       <Dialog open={!!selectedProject} onOpenChange={() => closeModal()}>
-        <DialogContent className="block w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 bg-black/95 backdrop-blur-xl border border-white/10 sm:max-w-4xl">
+        <DialogContent className="block w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 bg-[#0d1117]/95 backdrop-blur-xl border border-[#30363d] text-[#c9d1d9] sm:max-w-4xl rounded-xl">
+
+          {/* Modal Window Header */}
+          <div className="mac-window-header sticky top-0 z-50 justify-between">
+            <div className="flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+              <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+              <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+            </div>
+            <div className="text-xs text-white/40 font-mono">
+              {selectedProject?.title.toLowerCase().replace(/\s+/g, '_')}.tsx
+            </div>
+            <div className="w-10" />
+          </div>
+
           {selectedProject && (
             <div className="grid md:grid-cols-2">
-              <div className="relative w-full aspect-[1920/1227] md:h-full md:aspect-auto overflow-hidden group">
+              <div className="relative w-full aspect-[16/9] md:h-full md:aspect-auto overflow-hidden group bg-black">
                 <div
                   ref={modalScrollContainerRef}
                   className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar h-full w-full"
@@ -495,87 +481,69 @@ export function ProjectShowcase() {
                       <img
                         src={img}
                         alt={`${selectedProject.title} - ${idx + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain md:object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent md:bg-gradient-to-l pointer-events-none" />
                     </div>
                   ))}
                 </div>
 
-                <button
-                  onClick={() => scrollModal('left')}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 hidden md:flex"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={() => scrollModal('right')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 hidden md:flex"
-                >
-                  <ChevronRight size={20} />
-                </button>
-
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-[10px] text-white/70 border border-white/10 md:hidden pointer-events-none">
-                  Tap to expand
-                </div>
+                <div className="absolute inset-0 pointer-events-none border-b md:border-b-0 md:border-r border-[#30363d]" />
               </div>
 
-              <div className="p-6 md:p-8">
+              <div className="p-6 md:p-8 font-mono">
                 <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: selectedProject.color }}
-                  />
-                  <span className="text-sm text-white/60">{selectedProject.id.padStart(2, '0')}</span>
+                  <span className="px-2 py-0.5 text-xs rounded bg-[#161b22] border border-[#30363d] text-[#00f0ff]">
+                    ID: {selectedProject.id}
+                  </span>
                 </div>
 
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
                   {selectedProject.title}
                 </h3>
 
-                <p className="text-white/70 mb-6 leading-relaxed text-sm md:text-base">
+                <p className="text-[#8b949e] mb-6 leading-relaxed text-sm">
                   {selectedProject.longDescription}
                 </p>
 
                 <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
                   {selectedProject.stats.map((stat) => (
-                    <div key={stat.label} className="text-center p-2 md:p-3 glass rounded-lg">
-                      <div className="text-lg md:text-xl font-bold" style={{ color: selectedProject.color }}>
+                    <div key={stat.label} className="text-center p-3 bg-[#161b22] border border-[#30363d] rounded-lg">
+                      <div className="text-lg font-bold text-[#e2e8f0]">
                         {stat.value}
                       </div>
-                      <div className="text-[10px] md:text-xs text-white/50">{stat.label}</div>
+                      <div className="text-[10px] text-[#8b949e] uppercase">{stat.label}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="mb-6">
-                  <p className="text-sm text-white/50 mb-2">Tech Stack</p>
+                <div className="mb-8">
+                  <p className="text-xs text-[#8b949e] mb-3 uppercase tracking-wider">Dependency Graph</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 md:px-3 md:py-1 text-xs md:text-sm bg-white/5 rounded-full text-white/70"
+                        className="px-2 py-1 text-xs bg-[#161b22] border border-[#30363d] rounded text-[#8b949e] hover:text-[#58a6ff] hover:border-[#58a6ff] transition-colors cursor-default"
                       >
-                        {tag}
+                        import {tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <a
                     href={selectedProject.liveUrl}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2.5 bg-gradient-to-r from-[#7e6ee3] to-[#5b6ee3] rounded-lg text-white font-medium hover:shadow-lg hover:shadow-[#7e6ee3]/30 transition-all duration-300"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#238636] hover:bg-[#2ea043] text-white rounded-md text-sm font-bold transition-all border border-[rgba(255,255,255,0.1)]"
                   >
-                    <ExternalLink size={17} />
-                    Live Demo
+                    <ExternalLink size={16} />
+                    View Deployment
                   </a>
                   <a
                     href={selectedProject.githubUrl}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2.5 glass rounded-lg text-white font-medium hover:bg-white/10 transition-all duration-300"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] rounded-md text-sm font-bold transition-all border border-[#30363d]"
                   >
-                    <Github size={17} />
-                    {selectedProject.isPrivate ? "Private Repo 🔐" : "View Code"}
+                    <Github size={16} />
+                    {selectedProject.isPrivate ? "Private Repo" : "Source Code"}
                   </a>
                 </div>
               </div>
@@ -587,16 +555,16 @@ export function ProjectShowcase() {
       {/* --- Full Screen Image Viewer Overlay --- */}
       {selectedProject && fullScreenImageIndex !== null && createPortal(
         <div
-          className="fixed inset-0 z-[20000] bg-black/95 backdrop-blur-md flex flex-col cursor-default"
+          className="fixed inset-0 z-[20000] bg-[#0d1117]/98 backdrop-blur-md flex flex-col cursor-default"
           style={{ pointerEvents: 'auto' }}
           onPointerDown={(e) => e.stopPropagation()}
           onClick={closeModal}
         >
           <button
             onClick={(e) => { e.stopPropagation(); closeModal(); }}
-            className="absolute top-4 right-4 z-[20001] text-white/70 hover:text-white p-2 bg-black/20 rounded-full backdrop-blur-sm cursor-pointer transition-colors"
+            className="absolute top-4 right-4 z-[20001] text-white p-2 hover:bg-[#30363d] rounded transition-colors"
           >
-            <X size={32} />
+            <X size={24} />
           </button>
 
           <div
@@ -618,7 +586,7 @@ export function ProjectShowcase() {
                 <img
                   src={img}
                   alt={`Full Screen ${idx + 1}`}
-                  className="max-w-full max-h-full object-contain shadow-2xl select-none"
+                  className="max-w-full max-h-full object-contain border border-[#30363d] shadow-2xl bg-black"
                   draggable={false}
                 />
               </div>
@@ -627,19 +595,19 @@ export function ProjectShowcase() {
 
           <button
             onClick={(e) => { e.stopPropagation(); handleFullScreenNav('left'); }}
-            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all backdrop-blur-sm hidden md:flex z-[20001] cursor-pointer"
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded bg-[#161b22] border border-[#30363d] flex items-center justify-center text-white hover:border-[#58a6ff] transition-all hidden md:flex z-[20001] cursor-pointer"
           >
-            <ChevronLeft size={36} />
+            <ChevronLeft size={24} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); handleFullScreenNav('right'); }}
-            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all backdrop-blur-sm hidden md:flex z-[20001] cursor-pointer"
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded bg-[#161b22] border border-[#30363d] flex items-center justify-center text-white hover:border-[#58a6ff] transition-all hidden md:flex z-[20001] cursor-pointer"
           >
-            <ChevronRight size={36} />
+            <ChevronRight size={24} />
           </button>
 
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/50 text-sm font-medium tracking-widest pointer-events-none">
-            {fullScreenImageIndex + 1} / {(selectedProject.images && selectedProject.images.length > 0 ? selectedProject.images : [selectedProject.image]).length}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[#8b949e] text-xs font-mono tracking-widest pointer-events-none">
+            BLOCK {fullScreenImageIndex + 1} OF {(selectedProject.images && selectedProject.images.length > 0 ? selectedProject.images : [selectedProject.image]).length}
           </div>
         </div>,
         document.body

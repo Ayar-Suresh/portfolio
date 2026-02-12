@@ -412,7 +412,7 @@ export function AIChat() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+          'Authorization': `Bearer ${"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"}`,
           'dangerously-allow-browser': 'true'
         },
         body: JSON.stringify({

@@ -408,11 +408,12 @@ export function AIChat() {
 
     try {
       const minDelay = new Promise(resolve => setTimeout(resolve, 1500));
+      const apiKey = process.env.REACT_APP_GROQ_KEY;
       const fetchPromise = fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${"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"}`,
+          'Authorization': `Bearer ${apiKey}`,
           'dangerously-allow-browser': 'true'
         },
         body: JSON.stringify({

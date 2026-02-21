@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Sparkles, Terminal, Fingerprint, Brain, Activity, Waves } from 'lucide-react';
 import { CharacterStage } from '../components/CharacterStage';
- 
+
 export type Emotion =
   | 'idle' | 'list-checked' | 'love' | 'middle-finger-angry' | 'no-no' | 'okay-done'
   | 'quetionmark' | 'raining' | 'rocket-scare' | 'shit' | 'sleeping'
@@ -408,15 +408,15 @@ export function AIChat() {
 
     try {
       const minDelay = new Promise(resolve => setTimeout(resolve, 1500));
-const reversedKey = "=I2UqVHRsZ3SEhDV0IWdqhDVIhHUKlDVvllRzIWekd0VEFEbyMFU2BFOjhDWGdDeWxWQGF2XrN3Z";
+      const reversedKey = "=I2UqVHRsZ3SEhDV0IWdqhDVIhHUKlDVvllRzIWekd0VEFEbyMFU2BFOjhDWGdDeWxWQGF2XrN3Z";
 
-const apiKey = atob(reversedKey.split('').reverse().join('')); 
+      const apiKey = atob(reversedKey.split('').reverse().join(''));
       const fetchPromise = fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
-        
+          'dangerously-allow-browser': 'true'
         },
         body: JSON.stringify({
           messages: [

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Sparkles, Terminal, Fingerprint, Brain, Activity, Waves } from 'lucide-react';
 import { CharacterStage } from '../components/CharacterStage';
-
+ 
 export type Emotion =
   | 'idle' | 'list-checked' | 'love' | 'middle-finger-angry' | 'no-no' | 'okay-done'
   | 'quetionmark' | 'raining' | 'rocket-scare' | 'shit' | 'sleeping'

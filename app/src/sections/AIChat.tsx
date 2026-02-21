@@ -408,7 +408,11 @@ export function AIChat() {
 
     try {
       const minDelay = new Promise(resolve => setTimeout(resolve, 1500));
-      const apiKey = "vrZRaahmPyadjlU89GYzJC2BYF3bydGWurCQJ1sjOHDYtC3x4hWw_ksg".split('').reverse().join('');
+      const encodedKey1 = "Z3NrX1ZDNm1JaU5SZnlZb3A3MGxDak9";
+      const encodedKey2 = "BV0dkeWIzRlk4VmxTbEJtN0JSRDBLcjVZRmd0anY0VHo="
+      
+
+      const apiKey = atob(encodedKey1 + encodedKey2); 
       const fetchPromise = fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {

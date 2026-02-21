@@ -414,7 +414,7 @@ export function AIChat() {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
-          'dangerously-allow-browser': 'true'
+        
         },
         body: JSON.stringify({
           messages: [
